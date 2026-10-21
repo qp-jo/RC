@@ -988,6 +988,10 @@
 
     function checkoutCart() {
       if (cart.length === 0) return;
+      if (!isStoreOpen()) {
+        showToast('⚠️ المطعم مغلق حالياً — لا يمكن إتمام الطلب');
+        return;
+      }
       const itemsText = cart.map((i, idx) => `${idx + 1}. ${i.title}${i.price ? ' - ' + i.price + ' ' + STORE_CONFIG.currency : ''} × ${i.qty || 1}`).join('\n');
       const itemField = document.getElementById('cust-item');
       if (itemField) itemField.value = itemsText;
@@ -1742,9 +1746,11 @@
                 <div class="text-xl font-black text-[#DC2626]">
                   ${item.price ? `${escapeHtml(item.price)} <span class="text-xs text-slate-500 dark:text-slate-400">${STORE_CONFIG.currency}</span>` : L.contactPrice}
                 </div>
-                <div class="flex gap-2 items-center">
+               <div class="flex gap-2 items-center">
                   <button data-wishlist-btn="${escapeHtml(item.title)}" onclick="toggleWishlist('${attrTitle}', '${escapeHtml(item.price)}', '${escapeHtml(item.category)}')" class="click-scale w-9 h-9 rounded-xl border ${heartBtnClass(inWishlist)} flex items-center justify-center transition shadow-sm" title="المفضلة"><i class="fas fa-heart text-sm"></i></button>
-                  ${isSoldOut ? `
+                  ${!isStoreOpen() ? `
+                    <span class="bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-4 py-2 rounded-xl text-xs border border-slate-300 dark:border-slate-700 cursor-not-allowed"><i class="fas fa-clock"></i> المطعم مغلق</span>
+                  ` : isSoldOut ? `
                     <span class="bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-4 py-2 rounded-xl text-xs border border-slate-300 dark:border-slate-700 cursor-not-allowed"><i class="fas fa-ban"></i> ${isUsed ? 'تم البيع' : 'نفذت الكمية'}</span>
                   ` : isUsed ? `
                     <a href="https://wa.me/${STORE_CONFIG.whatsapp}?text=${whatsappMsg}" target="_blank" class="click-scale bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow"><i class="fab fa-whatsapp"></i> ${L.contactWhatsApp}</a>
@@ -1803,7 +1809,9 @@
                 </div>
               </div>
               <div class="space-y-2">
-                ${isSoldOut ? `
+                ${!isStoreOpen() ? `
+                  <div class="w-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold py-3 rounded-xl text-center text-sm border border-slate-300 dark:border-slate-700 cursor-not-allowed"><i class="fas fa-clock"></i> المطعم مغلق</div>
+                ` : isSoldOut ? `
                   <div class="w-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold py-3 rounded-xl text-center text-sm border border-slate-300 dark:border-slate-700 cursor-not-allowed"><i class="fas fa-ban"></i> ${isUsed ? 'تم البيع' : 'نفذت الكمية'}</div>
                 ` : isUsed ? `
                   <a href="https://wa.me/${STORE_CONFIG.whatsapp}?text=${whatsappMsg}" target="_blank" class="click-scale w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-center flex items-center justify-center gap-2 transition text-sm shadow-md"><i class="fab fa-whatsapp text-lg"></i> ${L.contactForOrder}</a>
@@ -2021,7 +2029,11 @@
           ` : ''}
           ${specsHtml}
           <div class="mt-6 space-y-2">
-            ${isSoldOut ? `
+            ${!isStoreOpen() ? `
+              <div class="w-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold py-3 rounded-xl text-center border border-slate-300 dark:border-slate-700 cursor-not-allowed">
+                <i class="fas fa-clock"></i> المطعم مغلق حالياً
+              </div>
+            ` : isSoldOut ? `
               <div class="w-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold py-3 rounded-xl text-center border border-slate-300 dark:border-slate-700 cursor-not-allowed">
                 <i class="fas fa-ban"></i> ${isUsed ? 'تم البيع' : 'نفذت الكمية'}
               </div>
