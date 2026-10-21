@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════
-// ═══ Service Worker — المتجر الذكي ═══
+// ═══ Service Worker — مطعم الشام ═══
 // ═══════════════════════════════════════
-const CACHE_NAME = 'smart-store-v1';
+const CACHE_NAME = 'rc-restaurant-v1';
 const urlsToCache = [
   './',
   './index.html',
@@ -36,7 +36,6 @@ self.addEventListener('activate', (event) => {
 
 // ═══ الجلب ═══
 self.addEventListener('fetch', (event) => {
-  // لا تخزّن طلبات Google Sheets أو Apps Script
   const url = event.request.url;
   if (url.includes('docs.google.com') ||
       url.includes('script.google.com') ||
@@ -48,7 +47,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request).then((fetchResponse) => {
-        // خزّن نسخة من الصور والملفات الثابتة
         if (url.includes('.png') || url.includes('.jpg') || url.includes('.webp') ||
             url.includes('.css') || url.includes('.js') || url.includes('.woff2')) {
           return caches.open(CACHE_NAME).then((cache) => {
