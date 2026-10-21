@@ -1,24 +1,24 @@
 {
-  "name": "لوحة التحكم — المتجر الذكي",
-  "short_name": "لوحة التحكم",
-  "description": "إدارة منتجات المتجر",
+  "name": "لوحة تحكم — مطعم الشام",
+  "short_name": "لوحة الشام",
+  "description": "إدارة منيو مطعم الشام",
   "start_url": "./admin.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0f172a",
-  "theme_color": "#3BC1C5",
+  "theme_color": "#DC2626",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
     {
-      "src": "https://i.ibb.co/SXLvqXYG/1000051043-png.png",
+      "src": "https://i.ibb.co/99RqKLz1/fe748ecb78b8755c1e2ebb0404d3fb24.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://i.ibb.co/SXLvqXYG/1000051043-png.png",
+      "src": "https://i.ibb.co/99RqKLz1/fe748ecb78b8755c1e2ebb0404d3fb24.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
