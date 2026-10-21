@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin
+Disallow: /manifest-admin.json
+
+Sitemap: https://qp-jo.github.io/M/sitemap.xml

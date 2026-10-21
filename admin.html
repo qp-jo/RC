@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة التحكم</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+
+  <!-- Font Awesome + Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- ═══ Favicon + PWA ═══ -->
+  <link rel="icon" type="image/png" href="https://i.ibb.co/5X7wTHgB/1000051762-jpg.jpg">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/5X7wTHgB/1000051762-jpg.jpg">
+  <link rel="manifest" href="manifest-admin.json">
+  <meta name="theme-color" content="#3BC1C5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="لوحة التحكم">
+  
+  <style>
+    :root {
+      --primary: #3BC1C5;
+      --primary-dark: #2ba9ad;
+      --primary-rgb: 59, 193, 197;
+    }
+
+    body { font-family: 'Tajawal', sans-serif; }
+
+    .click-scale { transition: transform 0.15s ease; }
+    .click-scale:active { transform: scale(0.96); }
+
+    .truncate-1 {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .dark body { background-color: #020617; color: #f1f5f9; }
+    .dark .bg-white { background-color: #0f172a !important; }
+    .dark .bg-slate-100 { background-color: #1e293b !important; }
+    .dark .bg-slate-200 { background-color: #334155 !important; }
+    .dark .text-slate-900 { color: #f1f5f9 !important; }
+    .dark .text-slate-700 { color: #cbd5e1 !important; }
+    .dark .text-slate-500 { color: #94a3b8 !important; }
+    .dark .border-slate-300 { border-color: #334155 !important; }
+    .dark .border-slate-200 { border-color: #1e293b !important; }
+    .dark input, .dark select, .dark textarea {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    .dark .hover\:bg-slate-300:hover { background-color: #475569 !important; }
+    .dark .hover\:bg-slate-100:hover { background-color: #334155 !important; }
+
+    #product-form::-webkit-scrollbar { width: 6px; }
+    #product-form::-webkit-scrollbar-track { background: transparent; }
+    #product-form::-webkit-scrollbar-thumb { background: rgba(59, 193, 197, 0.4); border-radius: 10px; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+
+  <!-- ═══ شاشة تسجيل الدخول ═══ -->
+  <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
+    <div class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
+      <div class="text-center mb-6">
+        <div id="login-icon" class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#3BC1C5]/15 border border-[#3BC1C5]/30 text-[#3BC1C5] mb-3">
+          <i class="fas fa-lock text-2xl"></i>
+        </div>
+        <h1 id="login-title" class="text-2xl font-black text-slate-900">لوحة تحكم المتجر</h1>
+        <p class="text-slate-500 text-xs mt-1">أدخل كلمة السر للدخول</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">اسم المستخدم:</label>
+          <input type="text" id="username-input" required placeholder="••••••••" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">كلمة السر:</label>
+          <input type="password" id="password-input" required placeholder="••••••••" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+        </div>
+        <p id="login-error" class="text-xs text-rose-500 font-bold hidden text-center">❌ كلمة السر غير صحيحة</p>
+        <button type="submit" class="click-scale w-full bg-[#3BC1C5] hover:bg-[#2ba9ad] text-white font-black py-3.5 rounded-xl transition">
+          <i class="fas fa-sign-in-alt"></i> دخول
+        </button>
+      </form>
+
+      <p class="text-center text-[10px] text-slate-400 mt-4">
+        <i class="fas fa-shield-alt"></i> محمية بكلمة سر
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ لوحة التحكم ═══ -->
+  <div id="dashboard" class="hidden">
+
+    <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-sm px-4 py-3">
+      <div class="max-w-7xl mx-auto flex justify-between items-center gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <img id="header-logo" src="" alt="لوغو" class="w-12 h-12 rounded-xl object-contain border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 p-1 flex-shrink-0 shadow-sm">
+          <div class="min-w-0 flex-1">
+            <p id="header-store-name" class="font-black text-base text-slate-900 dark:text-white truncate leading-tight" title="">اسم المتجر</p>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold leading-tight">إدارة المنتجات</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button onclick="toggleAdminTheme()" id="admin-theme-btn" class="click-scale h-10 w-10 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-amber-500 dark:text-cyan-400 rounded-xl border border-slate-300 dark:border-slate-700 transition flex items-center justify-center" title="تغيير المظهر">
+            <i id="admin-theme-icon" class="fas fa-sun text-sm"></i>
+          </button>
+          <a href="index.html" target="_blank" class="click-scale h-10 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-3 rounded-xl text-xs flex items-center gap-1.5 transition" title="عرض المتجر">
+            <i class="fas fa-external-link-alt"></i> <span class="hidden sm:inline">عرض المتجر</span>
+          </a>
+          <button onclick="handleLogout()" class="click-scale h-10 bg-rose-500 hover:bg-rose-600 text-white font-bold px-3 rounded-xl text-xs flex items-center gap-1.5 transition" title="خروج">
+            <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">خروج</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4">
+
+      <!-- الإحصائيات -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-800 p-4 mb-4 shadow-sm">
+        <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <i class="fas fa-chart-bar text-[#3BC1C5]"></i> إحصائيات سريعة
+        </h3>
+        <div id="stats-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-center">
+            <div id="stat-products" class="text-2xl font-black text-[#3BC1C5]">—</div>
+            <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1">منتج</div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-center">
+            <div id="stat-orders" class="text-2xl font-black text-[#3BC1C5]">—</div>
+            <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1">إجمالي الطلبات</div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-center">
+            <div id="stat-today" class="text-2xl font-black text-[#3BC1C5]">—</div>
+            <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1">طلبات اليوم</div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-center">
+            <div id="stat-week" class="text-2xl font-black text-[#3BC1C5]">—</div>
+            <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1">آخر 7 أيام</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- شريط الأدوات -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-800 p-4 mb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="openAddModal()" class="click-scale bg-[#3BC1C5] hover:bg-[#2ba9ad] text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition shadow-md">
+            <i class="fas fa-plus"></i> إضافة منتج جديد
+          </button>
+          <button onclick="refreshProducts()" class="click-scale bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition">
+            <i class="fas fa-sync-alt"></i> تحديث
+          </button>
+          
+          <div class="flex items-center bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-1 gap-1">
+            <button onclick="setProductView('grid')" id="view-grid-btn" class="click-scale px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3BC1C5] text-slate-950 transition shadow" title="مربعات">
+              <i class="fas fa-th-large"></i>
+            </button>
+            <button onclick="setProductView('list')" id="view-list-btn" class="click-scale px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition" title="صفوف">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto relative">
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <i class="fas fa-search text-xs"></i>
+          </span>
+          <input type="text" id="search-input" oninput="handleSearchInput()" autocomplete="off" placeholder="ابحث عن منتج، ماركة، تصنيف..." class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl pr-9 pl-9 py-2 text-xs flex-1 sm:w-72 text-slate-900 dark:text-white focus:outline-none focus:border-[#3BC1C5] transition">
+          <button id="search-clear" onclick="clearSearch()" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition click-scale">
+            <i class="fas fa-times-circle text-xs"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="results-count" class="text-xs text-slate-500 dark:text-slate-400 font-bold mb-3 text-right"></div>
+
+      <div id="bulk-actions" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-rose-300 dark:border-rose-800 p-3 mb-3 flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+          <i class="fas fa-check-square text-[#3BC1C5]"></i>
+          <span id="bulk-count">0</span> منتج محدد
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button onclick="selectAllProducts()" class="click-scale bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-3 py-2 rounded-xl text-xs transition flex-1 sm:flex-initial">
+            <i class="fas fa-check-double"></i> تحديد الكل
+          </button>
+          <button onclick="deleteSelectedProducts()" class="click-scale bg-rose-500 hover:bg-rose-600 text-white font-bold px-3 py-2 rounded-xl text-xs transition flex-1 sm:flex-initial">
+            <i class="fas fa-trash"></i> حذف المحدد
+          </button>
+        </div>
+      </div>
+
+      <div id="loading" class="text-center py-20 text-slate-500">
+        <i class="fas fa-spinner fa-spin text-3xl text-[#3BC1C5] mb-2"></i>
+        <p class="text-sm font-semibold">جاري تحميل المنتجات...</p>
+      </div>
+
+      <div id="products-list" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      
+      <div id="error-state" class="hidden text-center py-16 bg-white dark:bg-slate-900 border border-rose-300 dark:border-rose-800 rounded-2xl p-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-500 mb-3">
+          <i class="fas fa-wifi text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white mb-1">تعذر تحميل البيانات</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">تأكد من اتصالك بالإنترنت ثم حاول مرة أخرى</p>
+        <button onclick="refreshProducts()" class="click-scale bg-[#3BC1C5] hover:bg-[#2ba9ad] text-white font-bold px-6 py-3 rounded-xl text-sm inline-flex items-center gap-2 transition shadow-md">
+          <i class="fas fa-sync-alt"></i> إعادة المحاولة
+        </button>
+      </div>
+
+      <div id="empty-state" class="hidden text-center py-20 text-slate-500">
+        <i class="fas fa-box-open text-5xl mb-3 text-slate-300"></i>
+        <p class="text-sm font-semibold">لا توجد منتجات بعد</p>
+        <button onclick="openAddModal()" class="mt-4 bg-[#3BC1C5] hover:bg-[#2ba9ad] text-white font-bold px-5 py-2.5 rounded-xl text-sm transition">
+          <i class="fas fa-plus"></i> أضف أول منتج
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal إضافة/تعديل -->
+  <div id="product-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-start sm:items-center justify-center p-2 sm:p-4 pt-4 sm:pt-4 overflow-y-auto">
+    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl my-4 sm:my-8">
+
+      <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-800">
+        <h3 id="modal-title" class="text-lg font-black text-slate-900 dark:text-white">إضافة منتج</h3>
+        <button onclick="closeProductModal()" class="click-scale w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-rose-500 hover:text-white text-slate-700 dark:text-slate-300 flex items-center justify-center transition">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="product-form" onsubmit="handleProductSubmit(event)" class="p-5 space-y-4 max-h-[calc(100vh-10rem)] overflow-y-auto">
+
+        <input type="hidden" id="f-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المنتج <span class="text-rose-500">*</span>:</label>
+            <input type="text" id="f-title" required placeholder="iPhone 14 Pro Max" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">السعر <span class="text-rose-500">*</span>:</label>
+            <input type="number" id="f-price" required placeholder="850" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            الصورة الرئيسية <span class="text-rose-500">*</span>:
+          </label>
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl p-3">
+
+            <div id="main-image-preview" class="hidden mb-3">
+              <div class="relative inline-block">
+                <img id="main-image-preview-img" src="" alt="معاينة" class="w-32 h-32 object-cover rounded-xl border-2 border-[#3BC1C5]">
+                <button type="button" onclick="clearMainImage()" class="click-scale absolute -top-2 -left-2 w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg">
+                  <i class="fas fa-times text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-2">
+              <button type="button" onclick="document.getElementById('main-image-file').click()" class="click-scale bg-[#3BC1C5] hover:bg-[#2ba9ad] text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition">
+                <i class="fas fa-camera"></i> اختر صورة من الجهاز
+              </button>
+              <span id="main-image-status" class="text-xs text-slate-500 dark:text-slate-400 flex items-center"></span>
+            </div>
+            <input type="file" id="main-image-file" accept="image/*" class="hidden" onchange="handleMainImageUpload(event)">
+
+            <input type="url" id="f-image" placeholder="أو الصق رابط الصورة هنا..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#3BC1C5]" oninput="updateMainImagePreview(this.value)">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            صور إضافية (اختياري):
+          </label>
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl p-3">
+
+            <div id="extra-images-list" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3"></div>
+
+            <button type="button" onclick="document.getElementById('extra-image-file').click()" class="click-scale bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition">
+              <i class="fas fa-plus"></i> إضافة صورة
+            </button>
+            <input type="file" id="extra-image-file" accept="image/*" multiple class="hidden" onchange="handleExtraImageUpload(event)">
+
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2">
+              يمكنك اختيار عدة صور مرة وحدة. الحد الأقصى 5 صور.
+            </p>
+
+            <input type="hidden" id="f-images" value="">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الوصف:</label>
+          <textarea id="f-description" rows="3" placeholder="وصف المنتج..." class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5] resize-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">التصنيف <span class="text-rose-500">*</span>:</label>
+            <select id="f-category-select" onchange="handleCategorySelect()" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5] cursor-pointer"></select>
+            <input type="text" id="f-category" placeholder="اكتب التصنيف يدويًا..." class="hidden mt-2 w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الماركة:</label>
+            <input type="text" id="f-brand" placeholder="Apple / Samsung / ..." list="brands-list" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+            <datalist id="brands-list"></datalist>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الكمية:</label>
+            <input type="number" id="f-stock" placeholder="5" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+            <p id="stock-hint" class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">اتركها فاضية إذا كانت غير محدودة</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">تاريخ انتهاء العرض:</label>
+            <input type="datetime-local" id="f-enddate" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-[#3BC1C5]">
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">اتركه فاضي إذا ما فيه عرض</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            المواصفات (اختياري):
+          </label>
+          <div class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl p-3">
+
+            <div id="specs-list" class="space-y-2 mb-3"></div>
+
+            <button type="button" onclick="addSpec()" class="click-scale bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition">
+              <i class="fas fa-plus"></i> إضافة مواصفة
+            </button>
+
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2">
+              أمثلة: الرام / 8GB — التخزين / 256GB — الشاشة / 6.1"
+            </p>
+
+            <input type="hidden" id="f-specs" value="">
+          </div>
+        </div>
+
+        <p id="form-error" class="text-xs text-rose-500 font-bold hidden text-center"></p>
+
+        <div class="sticky bottom-0 bg-white dark:bg-slate-900 -mx-5 px-5 pt-3 pb-2 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+          <button type="submit" id="save-btn" class="click-scale flex-1 bg-[#3BC1C5] hover:bg-[#2ba9ad] text-white font-black py-3 rounded-xl transition">
+            <i class="fas fa-save"></i> حفظ
+          </button>
+          <button type="button" onclick="closeProductModal()" class="click-scale bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-6 py-3 rounded-xl transition">
+            إلغاء
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+  
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="fixed inset-0 z-[70] bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-500 mb-4">
+        <i class="fas fa-exclamation-triangle text-2xl"></i>
+      </div>
+      <h3 class="font-black text-lg text-slate-900 dark:text-white mb-2">تأكيد الحذف</h3>
+      <p id="confirm-message" class="text-sm text-slate-500 dark:text-slate-400 mb-6">هل أنت متأكد؟</p>
+      <div class="flex gap-2">
+        <button id="confirm-yes" class="click-scale flex-1 bg-rose-500 hover:bg-rose-600 text-white font-black py-3 rounded-xl transition">
+          <i class="fas fa-trash"></i> حذف
+        </button>
+        <button id="confirm-no" class="click-scale flex-1 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 rounded-xl transition">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] hidden">
+    <div class="bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 font-bold text-sm">
+      <i class="fas fa-check-circle text-emerald-400" id="toast-icon"></i>
+      <span id="toast-text">تم</span>
+    </div>
+  </div>
+
+  <script>
+    // ═══ 1. إعدادات المتجر ═══
+    const STORE_CONFIG = {
+      name: 'المتجر الذكي',
+      logo: 'https://i.ibb.co/5X7wTHgB/1000051762-jpg.jpg',
+      favicon: 'https://i.ibb.co/5X7wTHgB/1000051762-jpg.jpg',
+
+      colors: {
+        primary: '#3BC1C5',
+        primaryDark: '#2ba9ad',
+        primaryRgb: '59, 193, 197'
+      },
+
+      adminApiUrl: 'https://script.google.com/macros/s/AKfycby2Pe3_UaiZdLqYlSkIsKwSQjIde4pwglISNhfrQz5DPfo0tjh85rXyUvyNIxBR1CmU/exec',
+      adminSecretToken: 'SMART_STORE_2026_SECRET',
+      usernameHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+      passwordHash: '5182ac3c8986de4ab26c0e6b71a58d87a94f4e95510746d04f356672c97cc727',
+
+      categories: [
+        'موبايل جديد',
+        'موبايل مستعمل',
+        'كمبيوتر/لابتوب جديد',
+        'كمبيوتر/لابتوب مستعمل',
+        'تابلت',
+        'ساعة ذكية',
+        'إكسسوارات',
+        'عرض خاص'
+      ],
+
+      brands: ['Apple', 'Samsung', 'Honor', 'Huawei', 'Xiaomi', 'Lenovo', 'Dell', 'HP', 'Asus', 'Acer'],
+
+      labels: {
+        addProductTitle: 'إضافة منتج جديد',
+        editProductTitle: 'تعديل المنتج',
+        addButton: '<i class="fas fa-plus"></i> إضافة',
+        saveButton: '<i class="fas fa-save"></i> حفظ التعديلات',
+        savingButton: '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...',
+        currency: 'د.أ',
+        contactPrice: 'تواصل للسعر',
+        quantityLabel: 'كمية',
+        usedHint: '✓ المستعمل قطعة واحدة فقط — تم ضبطها تلقائيًا',
+        unlimitedHint: 'اتركها فاضية إذا كانت غير محدودة'
+      },
+
+      maxExtraImages: 5,
+      maxSpecs: 15,
+      maxImageSize: 5 * 1024 * 1024,
+      defaultDark: true
+    };
+
+    const API_URL = STORE_CONFIG.adminApiUrl;
+    const SECRET_TOKEN = STORE_CONFIG.adminSecretToken;
+    const USERNAME_HASH = STORE_CONFIG.usernameHash;
+    const PASSWORD_HASH = STORE_CONFIG.passwordHash;
+
+    // ═══ 2. الحالة العامة ═══
+    let allProducts = [];
+    let editingProduct = null;
+    let mainImageUrl = '';
+    let extraImagesUrls = [];
+    let specsList = [];
+    let searchTimeout = null;
+    let searchQuery = '';
+    let productViewMode = 'grid';
+
+    // ═══ 3. تطبيق الإعدادات ═══
+    function applyStoreConfig() {
+      document.documentElement.style.setProperty('--primary', STORE_CONFIG.colors.primary);
+      document.documentElement.style.setProperty('--primary-dark', STORE_CONFIG.colors.primaryDark);
+      document.documentElement.style.setProperty('--primary-rgb', STORE_CONFIG.colors.primaryRgb);
+
+      const headerLogo = document.getElementById('header-logo');
+      if (headerLogo) headerLogo.src = STORE_CONFIG.logo;
+
+      document.title = 'لوحة التحكم — ' + STORE_CONFIG.name;
+
+      const loginTitle = document.getElementById('login-title');
+      if (loginTitle) loginTitle.innerText = 'لوحة تحكم ' + STORE_CONFIG.name;
+
+      const headerName = document.getElementById('header-store-name');
+      if (headerName) {
+        headerName.innerText = STORE_CONFIG.name;
+        headerName.setAttribute('title', STORE_CONFIG.name);
+      }
+
+      const favicon = document.querySelector('link[rel="icon"]');
+      if (favicon && STORE_CONFIG.favicon) favicon.href = STORE_CONFIG.favicon;
+      const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+      if (appleIcon && STORE_CONFIG.favicon) appleIcon.href = STORE_CONFIG.favicon;
+
+      renderCategoriesSelect();
+      renderBrandsList();
+    }
+
+    function renderCategoriesSelect() {
+      const select = document.getElementById('f-category-select');
+      if (!select) return;
+
+      let html = '<option value="">— اختر التصنيف —</option>';
+      STORE_CONFIG.categories.forEach(cat => {
+        html += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
+      });
+      html += '<option value="other">+ تصنيف آخر (اكتب يدويًا)</option>';
+
+      select.innerHTML = html;
+    }
+
+    function renderBrandsList() {
+      const datalist = document.getElementById('brands-list');
+      if (!datalist) return;
+      datalist.innerHTML = STORE_CONFIG.brands.map(b => `<option value="${escapeHtml(b)}">`).join('');
+    }
+
+    // ═══ 4. Utilities ═══
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeJs(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    }
+
+    function normalizeArabic(text) {
+      if (!text) return '';
+      return String(text).toLowerCase()
+        .replace(/[إأآا]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .replace(/[\u064b-\u065f]/g, '')
+        .replace(/[ؤئ]/g, 'ء')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      const icon = document.getElementById('toast-icon');
+      text.textContent = msg;
+      icon.className = type === 'error' ? 'fas fa-exclamation-circle text-rose-400' : 'fas fa-check-circle text-emerald-400';
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 2500);
+    }
+
+    function generateId() {
+      return 'p_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    }
+
+    async function sha256(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // ═══ 5. تسجيل الدخول ═══
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username-input').value;
+      const password = document.getElementById('password-input').value;
+      const userHash = await sha256(username);
+      const passHash = await sha256(password);
+      const errorEl = document.getElementById('login-error');
+
+      if (userHash === USERNAME_HASH && passHash === PASSWORD_HASH) {
+        sessionStorage.setItem('admin_logged_in', '1');
+        showDashboard();
+        errorEl.classList.add('hidden');
+      } else {
+        errorEl.classList.remove('hidden');
+        document.getElementById('password-input').value = '';
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('admin_logged_in');
+      location.reload();
+    }
+
+    function showDashboard() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      loadStats();
+      refreshProducts();
+    }
+
+    function hidePasswordFromURL() {
+      if (window.location.search.includes('password') || window.location.hash.includes('password')) {
+        history.replaceState({}, '', window.location.pathname);
+      }
+    }
+
+    // ═══ 6. API ═══
+    async function apiCall(action, data = {}) {
+      try {
+        const payload = { action, token: SECRET_TOKEN, ...data };
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        return await response.json();
+
+      } catch (err) {
+        let msg = 'تعذر الاتصال بالسيرفر';
+        if (err.name === 'AbortError') {
+          msg = 'انتهت مهلة الاتصال — تأكد من الإنترنت';
+        } else if (!navigator.onLine) {
+          msg = 'لا يوجد اتصال بالإنترنت';
+        } else if (err.message && err.message.includes('Failed to fetch')) {
+          msg = 'فشل الاتصال — الإنترنت ضعيف أو السيرفر لا يستجيب';
+        }
+        return { success: false, error: msg, isNetworkError: true };
+      }
+    }
+
+    // ═══ 7. الإحصائيات ═══
+    async function loadStats() {
+      const ids = ['stat-products', 'stat-orders', 'stat-today', 'stat-week'];
+
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
+      });
+
+      const result = await apiCall('getStats');
+
+      if (!result.success) {
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = '—';
+        });
+        return false;
+      }
+
+      document.getElementById('stat-products').innerText = result.totalProducts || 0;
+      document.getElementById('stat-orders').innerText = result.totalOrders || 0;
+      document.getElementById('stat-today').innerText = result.todayOrders || 0;
+      document.getElementById('stat-week').innerText = result.weekOrders || 0;
+      return true;
+    }
+
+    // ═══ 8. تحميل المنتجات ═══
+    async function refreshProducts() {
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('products-list').classList.add('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+      const errBox = document.getElementById('error-state');
+      if (errBox) errBox.classList.add('hidden');
+
+      loadStats();
+
+      const result = await apiCall('listProducts');
+
+      document.getElementById('loading').classList.add('hidden');
+
+      if (!result.success) {
+        showErrorState();
+        return;
+      }
+
+      allProducts = result.products || [];
+      renderProductsList();
+      
+      const bulkBar = document.getElementById('bulk-actions');
+      if (bulkBar) bulkBar.classList.add('hidden');
+    }
+
+    function showErrorState() {
+      const errBox = document.getElementById('error-state');
+      if (errBox) errBox.classList.remove('hidden');
+      document.getElementById('products-list').classList.add('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+    }
+
+    // ═══ 9. البحث ═══
+    function handleSearchInput() {
+      const val = document.getElementById('search-input').value.trim();
+      const clearBtn = document.getElementById('search-clear');
+      if (clearBtn) {
+        if (val.length > 0) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      if (searchTimeout) clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchQuery = val;
+        renderProductsList();
+      }, 250);
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('search-input');
+      if (input) input.value = '';
+      const clearBtn = document.getElementById('search-clear');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      searchQuery = '';
+      renderProductsList();
+    }
+
+    // ═══ 10. تبديل View ═══
+    function setProductView(mode) {
+      productViewMode = mode;
+      const gridBtn = document.getElementById('view-grid-btn');
+      const listBtn = document.getElementById('view-list-btn');
+      
+      if (mode === 'grid') {
+        gridBtn.className = "click-scale px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3BC1C5] text-slate-950 transition shadow";
+        listBtn.className = "click-scale px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+      } else {
+        listBtn.className = "click-scale px-3 py-1.5 rounded-lg text-xs font-bold bg-[#3BC1C5] text-slate-950 transition shadow";
+        gridBtn.className = "click-scale px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+      }
+      
+      renderProductsList();
+    }
+
+    // ═══ 11. عرض قائمة المنتجات ═══
+    function renderProductsList() {
+      const container = document.getElementById('products-list');
+      const emptyState = document.getElementById('empty-state');
+      const countEl = document.getElementById('results-count');
+      const searchTerm = searchQuery;
+
+      let filtered = allProducts;
+
+      if (searchTerm) {
+        const normalizedSearch = normalizeArabic(searchTerm);
+        const searchWords = normalizedSearch.split(/\s+/).filter(w => w.length > 0);
+
+        filtered = allProducts.filter(p => {
+          const title = normalizeArabic(p.title);
+          const brand = normalizeArabic(p.brand);
+          const category = normalizeArabic(p.category);
+          const desc = normalizeArabic(p.description);
+          const specs = normalizeArabic(p.specs);
+          const allText = title + ' ' + brand + ' ' + category + ' ' + desc + ' ' + specs;
+          return searchWords.every(word => allText.includes(word));
+        });
+      }
+
+      if (countEl) {
+        if (searchTerm && filtered.length > 0) {
+          if (filtered.length === 1) countEl.innerText = 'نتيجة واحدة';
+          else if (filtered.length === 2) countEl.innerText = 'نتيجتان';
+          else if (filtered.length <= 10) countEl.innerText = filtered.length + ' نتائج';
+          else countEl.innerText = filtered.length + ' نتيجة';
+        } else {
+          countEl.innerText = '';
+        }
+      }
+
+      if (filtered.length === 0) {
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+
+      if (productViewMode === 'list') {
+        container.className = "space-y-2";
+        container.innerHTML = filtered.map(p => {
+          const id = String(p.id || '');
+          const title = escapeHtml(p.title || '');
+          const price = String(p.price || '');
+          const image = String(p.image || '');
+          const category = escapeHtml(p.category || '');
+          const brand = escapeHtml(p.brand || '');
+          const stock = String(p.stock || '');
+
+          return `
+            <div class="product-card bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 p-3 shadow-sm hover:shadow-md transition relative group" data-id="${escapeJs(id)}">
+              <input type="checkbox" class="product-checkbox absolute top-3 right-3 w-5 h-5 accent-[#3BC1C5] cursor-pointer z-10" data-id="${escapeJs(id)}" onchange="updateBulkActions()" aria-label="تحديد المنتج">
+              <div class="flex gap-3 items-center">
+                <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-950 flex-shrink-0 border border-slate-200 dark:border-slate-800">
+                  <img src="${escapeHtml(image)}" alt="${title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/64?text=No+Image'">
+                </div>
+                <div class="flex-1 min-w-0 pl-8">
+                  <h4 class="font-bold text-sm text-slate-900 dark:text-white truncate" title="${title}">${title}</h4>
+                  <p class="text-xs text-[#3BC1C5] font-black mt-1">${price ? price + ' ' + STORE_CONFIG.labels.currency : STORE_CONFIG.labels.contactPrice}</p>
+                  <div class="flex flex-wrap gap-1 mt-1">
+                    ${category ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${category}</span>` : ''}
+                    ${brand ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${brand}</span>` : ''}
+                    ${stock ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">كمية: ${stock}</span>` : ''}
+                  </div>
+                </div>
+                <div class="flex gap-1 flex-shrink-0">
+                  <button onclick="editProduct('${escapeJs(id)}')" class="click-scale bg-slate-100 dark:bg-slate-800 hover:bg-[#3BC1C5] hover:text-white text-slate-700 dark:text-slate-300 font-bold py-2 px-3 rounded-lg text-xs transition">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button onclick="confirmDelete('${escapeJs(id)}', '${escapeJs(p.title || '')}')" class="click-scale bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-3 rounded-lg text-xs transition">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        container.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3";
+        container.innerHTML = filtered.map(p => {
+          const id = String(p.id || '');
+          const title = escapeHtml(p.title || '');
+          const price = String(p.price || '');
+          const image = String(p.image || '');
+          const category = escapeHtml(p.category || '');
+          const brand = escapeHtml(p.brand || '');
+          const stock = String(p.stock || '');
+
+          return `
+            <div class="product-card bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 p-2 shadow-sm hover:shadow-md transition relative group" data-id="${escapeJs(id)}">
+              <input type="checkbox" class="product-checkbox absolute top-2 left-2 w-5 h-5 accent-[#3BC1C5] cursor-pointer z-10" data-id="${escapeJs(id)}" onchange="updateBulkActions()" aria-label="تحديد المنتج">
+              <div class="w-full aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 mb-2">
+                <img src="${escapeHtml(image)}" alt="${title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+              </div>
+              <h4 class="font-bold text-xs text-slate-900 dark:text-white truncate-1 mb-1" title="${title}">${title}</h4>
+              <p class="text-[10px] text-[#3BC1C5] font-black mb-1.5">${price ? price + ' ' + STORE_CONFIG.labels.currency : STORE_CONFIG.labels.contactPrice}</p>
+              <div class="flex flex-wrap gap-1 mb-2">
+                ${category ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 truncate">${category}</span>` : ''}
+                ${stock ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">${stock}</span>` : ''}
+              </div>
+              <div class="flex gap-1 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button onclick="editProduct('${escapeJs(id)}')" class="click-scale flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-[#3BC1C5] hover:text-white text-slate-700 dark:text-slate-300 font-bold py-1.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="confirmDelete('${escapeJs(id)}', '${escapeJs(p.title || '')}')" class="click-scale bg-rose-500 hover:bg-rose-600 text-white font-bold py-1.5 px-2 rounded-lg text-[10px] transition">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // ═══ 12. الإجراءات الجماعية ═══
+    function updateBulkActions() {
+      const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+      const count = checkboxes.length;
+      const bulkBar = document.getElementById('bulk-actions');
+      const countEl = document.getElementById('bulk-count');
+
+      if (count > 0) {
+        bulkBar.classList.remove('hidden');
+        countEl.textContent = count;
+      } else {
+        bulkBar.classList.add('hidden');
+      }
+    }
+
+    function selectAllProducts() {
+      const checkboxes = document.querySelectorAll('.product-checkbox');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+      checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+      });
+
+      updateBulkActions();
+    }
+
+    async function deleteSelectedProducts() {
+      const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+      const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+
+      if (ids.length === 0) return;
+
+      const ok = await confirmAction('هل أنت متأكد من حذف ' + ids.length + ' منتج؟');
+      if (!ok) return;
+
+      let successCount = 0;
+      let failCount = 0;
+
+      showToast('جاري حذف ' + ids.length + ' منتج...');
+
+      for (const id of ids) {
+        const result = await apiCall('deleteProduct', { id });
+        if (result.success) successCount++;
+        else failCount++;
+      }
+
+      showToast('✅ تم حذف ' + successCount + ' منتج' + (failCount > 0 ? '، فشل ' + failCount : ''), failCount > 0 ? 'error' : 'success');
+      setTimeout(refreshProducts, 1500);
+    }
+
+    // ═══ 13. نافذة التأكيد ═══
+    function confirmAction(message) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const msgEl = document.getElementById('confirm-message');
+        const yesBtn = document.getElementById('confirm-yes');
+        const noBtn = document.getElementById('confirm-no');
+
+        msgEl.textContent = message;
+        modal.classList.remove('hidden');
+
+        const cleanup = () => {
+          modal.classList.add('hidden');
+          yesBtn.onclick = null;
+          noBtn.onclick = null;
+        };
+
+        yesBtn.onclick = () => { cleanup(); resolve(true); };
+        noBtn.onclick = () => { cleanup(); resolve(false); };
+      });
+    }
+
+    // ═══ 14. فتح Modal الإضافة ═══
+    function openAddModal() {
+      editingProduct = null;
+      document.getElementById('modal-title').textContent = STORE_CONFIG.labels.addProductTitle;
+      document.getElementById('save-btn').innerHTML = STORE_CONFIG.labels.addButton;
+      resetForm();
+      addSpec();
+      document.getElementById('product-modal').classList.remove('hidden');
+      setTimeout(() => {
+        const titleInput = document.getElementById('f-title');
+        if (titleInput) titleInput.focus();
+      }, 100);
+    }
+
+    // ═══ 15. فتح Modal التعديل ═══
+    function editProduct(id) {
+      const product = allProducts.find(p => String(p.id) === String(id));
+      if (!product) return;
+
+      editingProduct = product;
+      document.getElementById('modal-title').textContent = STORE_CONFIG.labels.editProductTitle;
+      document.getElementById('save-btn').innerHTML = STORE_CONFIG.labels.saveButton;
+
+      document.getElementById('f-id').value = product.id || '';
+      document.getElementById('f-title').value = product.title || '';
+      document.getElementById('f-price').value = product.price || '';
+      document.getElementById('f-image').value = product.image || '';
+      updateMainImagePreview(product.image || '');
+
+      extraImagesUrls = [];
+      if (product.images) {
+        const imgs = String(product.images).split('|').filter(u => u.trim());
+        extraImagesUrls = imgs.map(u => u.trim());
+      }
+      renderExtraImages();
+      updateImagesField();
+
+      document.getElementById('f-description').value = product.description || '';
+
+      const categoryValue = product.category || '';
+      const selectEl = document.getElementById('f-category-select');
+      const inputEl = document.getElementById('f-category');
+
+      const options = Array.from(selectEl.options).map(o => o.value);
+      if (options.includes(categoryValue) && categoryValue !== 'other') {
+        selectEl.value = categoryValue;
+        inputEl.classList.add('hidden');
+        inputEl.value = categoryValue;
+      } else if (categoryValue) {
+        selectEl.value = 'other';
+        inputEl.classList.remove('hidden');
+        inputEl.value = categoryValue;
+      } else {
+        selectEl.value = '';
+        inputEl.classList.add('hidden');
+        inputEl.value = '';
+      }
+
+      document.getElementById('f-brand').value = product.brand || '';
+      document.getElementById('f-stock').value = product.stock || '';
+
+      specsList = [];
+      if (product.specs) {
+        const parts = String(product.specs).split('|');
+        parts.forEach(p => {
+          const trimmed = p.trim();
+          if (trimmed && trimmed.includes(':')) {
+            const idx = trimmed.indexOf(':');
+            const name = trimmed.substring(0, idx).trim();
+            const value = trimmed.substring(idx + 1).trim();
+            if (name && value) {
+              specsList.push({ name: name, value: value });
+            }
+          }
+        });
+      }
+      renderSpecs();
+      updateSpecsField();
+
+      handleCategoryChange();
+
+      const endDate = product.enddate || product.endDate || '';
+      if (endDate) {
+        try {
+          const d = new Date(endDate);
+          if (!isNaN(d.getTime())) {
+            const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+            document.getElementById('f-enddate').value = local.toISOString().slice(0, 16);
+          }
+        } catch (e) {}
+      } else {
+        document.getElementById('f-enddate').value = '';
+      }
+
+      document.getElementById('product-modal').classList.remove('hidden');
+    }
+
+    // ═══ 16. إغلاق Modal ═══
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+      editingProduct = null;
+      resetForm();
+    }
+
+    function resetForm() {
+      document.getElementById('product-form').reset();
+      document.getElementById('f-id').value = '';
+      document.getElementById('form-error').classList.add('hidden');
+      clearMainImage();
+      extraImagesUrls = [];
+      renderExtraImages();
+      updateImagesField();
+
+      const select = document.getElementById('f-category-select');
+      const input = document.getElementById('f-category');
+      if (select) select.value = '';
+      if (input) {
+        input.value = '';
+        input.classList.add('hidden');
+      }
+      handleCategoryChange();
+
+      specsList = [];
+      renderSpecs();
+      updateSpecsField();
+    }
+
+    // ═══ 17. الصورة الرئيسية ═══
+    async function handleMainImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (file.size > STORE_CONFIG.maxImageSize) {
+        showToast('❌ الصورة كبيرة جدًا', 'error');
+        event.target.value = '';
+        return;
+      }
+
+      const status = document.getElementById('main-image-status');
+      status.innerHTML = '<i class="fas fa-spinner fa-spin text-[#3BC1C5]"></i> جاري الرفع...';
+
+      const base64 = await fileToBase64(file);
+      const result = await apiCall('uploadImage', {
+        imageData: base64,
+        imageName: file.name
+      });
+
+      if (result.success) {
+        mainImageUrl = result.url;
+        document.getElementById('f-image').value = result.url;
+        updateMainImagePreview(result.url);
+        status.innerHTML = '<i class="fas fa-check-circle text-emerald-500"></i> تم الرفع';
+        showToast('✅ تم رفع الصورة', 'success');
+      } else {
+        status.innerHTML = '<i class="fas fa-times-circle text-rose-500"></i> فشل';
+        showToast('❌ ' + (result.error || 'فشل الرفع'), 'error');
+      }
+
+      event.target.value = '';
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function updateMainImagePreview(url) {
+      const preview = document.getElementById('main-image-preview');
+      const img = document.getElementById('main-image-preview-img');
+      if (url && url.trim() !== '') {
+        img.src = url;
+        preview.classList.remove('hidden');
+        mainImageUrl = url;
+      } else {
+        preview.classList.add('hidden');
+      }
+    }
+
+    function clearMainImage() {
+      document.getElementById('main-image-preview').classList.add('hidden');
+      document.getElementById('main-image-preview-img').src = '';
+      document.getElementById('f-image').value = '';
+      document.getElementById('main-image-status').innerHTML = '';
+      mainImageUrl = '';
+    }
+
+    // ═══ 18. الصور الإضافية ═══
+    async function handleExtraImageUpload(event) {
+      const files = Array.from(event.target.files);
+      if (files.length === 0) return;
+
+      if (extraImagesUrls.length + files.length > STORE_CONFIG.maxExtraImages) {
+        showToast('❌ الحد الأقصى ' + STORE_CONFIG.maxExtraImages + ' صور إضافية', 'error');
+        event.target.value = '';
+        return;
+      }
+
+      showToast('جاري رفع ' + files.length + ' صورة...');
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > STORE_CONFIG.maxImageSize) {
+          showToast('⚠️ تم تجاهل صورة كبيرة: ' + file.name, 'error');
+          continue;
+        }
+
+        const base64 = await fileToBase64(file);
+        const result = await apiCall('uploadImage', {
+          imageData: base64,
+          imageName: file.name
+        });
+
+        if (result.success) {
+          extraImagesUrls.push(result.url);
+        } else {
+          showToast('⚠️ فشل رفع: ' + file.name, 'error');
+        }
+      }
+
+      renderExtraImages();
+      updateImagesField();
+      event.target.value = '';
+      showToast('✅ تم رفع ' + extraImagesUrls.length + ' صورة', 'success');
+    }
+
+    function renderExtraImages() {
+      const list = document.getElementById('extra-images-list');
+      if (extraImagesUrls.length === 0) {
+        list.innerHTML = '<p class="text-[10px] text-slate-400 dark:text-slate-500 col-span-full text-center py-2">لا توجد صور إضافية</p>';
+        return;
+      }
+
+      list.innerHTML = extraImagesUrls.map((url, i) => `
+        <div class="relative group">
+          <img src="${url}" alt="صورة ${i+1}" class="w-full aspect-square object-cover rounded-lg border border-slate-300 dark:border-slate-700">
+          <button type="button" onclick="removeExtraImage(${i})" class="click-scale absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition">
+            <i class="fas fa-times text-[10px]"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function removeExtraImage(index) {
+      extraImagesUrls.splice(index, 1);
+      renderExtraImages();
+      updateImagesField();
+    }
+
+    function updateImagesField() {
+      document.getElementById('f-images').value = extraImagesUrls.join('|');
+    }
+
+    // ═══ 19. التصنيف ═══
+    function handleCategorySelect() {
+      const select = document.getElementById('f-category-select');
+      const input = document.getElementById('f-category');
+      if (!select || !input) return;
+
+      const value = select.value;
+
+      if (value === 'other') {
+        input.classList.remove('hidden');
+        input.value = '';
+        input.focus();
+      } else {
+        input.classList.add('hidden');
+        input.value = value;
+      }
+
+      handleCategoryChange();
+    }
+
+    function handleCategoryChange() {
+  const categoryInput = document.getElementById('f-category');
+  const stockInput = document.getElementById('f-stock');
+  const hint = document.getElementById('stock-hint');
+  if (!categoryInput || !stockInput || !hint) return;
+
+  const cat = (categoryInput.value || '').toLowerCase();
+  const isUsed = cat.includes('مستعمل') || cat.includes('used');
+
+  if (isUsed) {
+    // الافتراضي 1 بس تقدر تعدّل (0 = تم البيع)
+    if (stockInput.value === '') {
+      stockInput.value = '1';
+    }
+    stockInput.readOnly = false;
+    stockInput.classList.remove('bg-slate-200', 'dark:bg-slate-800', 'cursor-not-allowed');
+    hint.textContent = '✓ المستعمل: 1 = متوفر، 0 = تم البيع';
+    hint.className = 'text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-1';
+  } else {
+    stockInput.readOnly = false;
+    stockInput.classList.remove('bg-slate-200', 'dark:bg-slate-800', 'cursor-not-allowed');
+    hint.textContent = '0 = نفذت الكمية، 1 = آخر قطعة، 5+ = متوفر';
+    hint.className = 'text-[10px] text-slate-500 dark:text-slate-400 mt-1';
+  }
+}
+    // ═══ 20. المواصفات ═══
+    function addSpec(name = '', value = '') {
+      if (specsList.length >= STORE_CONFIG.maxSpecs) {
+        showToast('❌ الحد الأقصى ' + STORE_CONFIG.maxSpecs + ' مواصفة', 'error');
+        return;
+      }
+      specsList.push({ name: name, value: value });
+      renderSpecs();
+      updateSpecsField();
+      setTimeout(() => {
+        const inputs = document.querySelectorAll('#specs-list .spec-name');
+        if (inputs.length > 0) inputs[inputs.length - 1].focus();
+      }, 50);
+    }
+
+    function renderSpecs() {
+      const list = document.getElementById('specs-list');
+      if (!list) return;
+      if (specsList.length === 0) {
+        list.innerHTML = '<p class="text-[10px] text-slate-400 dark:text-slate-500 text-center py-2">لا توجد مواصفات</p>';
+        return;
+      }
+
+      list.innerHTML = specsList.map((spec, i) => `
+        <div class="flex gap-2 items-center">
+          <input type="text" value="${escapeHtml(spec.name)}" oninput="updateSpec(${i}, 'name', this.value)" placeholder="الاسم" class="spec-name w-1/3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-xs focus:outline-none focus:border-[#3BC1C5]">
+          <input type="text" value="${escapeHtml(spec.value)}" oninput="updateSpec(${i}, 'value', this.value)" placeholder="القيمة" class="spec-value flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-xs focus:outline-none focus:border-[#3BC1C5]">
+          <button type="button" onclick="removeSpec(${i})" class="click-scale w-8 h-8 rounded-lg bg-rose-500/20 hover:bg-rose-500 hover:text-white text-rose-500 flex items-center justify-center transition flex-shrink-0">
+            <i class="fas fa-trash text-xs"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function updateSpec(index, field, value) {
+      if (!specsList[index]) return;
+      specsList[index][field] = value;
+      updateSpecsField();
+    }
+
+    function removeSpec(index) {
+      specsList.splice(index, 1);
+      renderSpecs();
+      updateSpecsField();
+    }
+
+    function updateSpecsField() {
+      const parts = specsList
+        .filter(s => s.name.trim() && s.value.trim())
+        .map(s => `${s.name.trim()}: ${s.value.trim()}`);
+      const field = document.getElementById('f-specs');
+      if (field) field.value = parts.join('|');
+    }
+
+    // ═══ 21. حفظ المنتج ═══
+    async function handleProductSubmit(e) {
+      e.preventDefault();
+      const errorEl = document.getElementById('form-error');
+      const saveBtn = document.getElementById('save-btn');
+
+      const product = {
+        id: document.getElementById('f-id').value || generateId(),
+        title: document.getElementById('f-title').value.trim(),
+        price: document.getElementById('f-price').value.trim(),
+        image: document.getElementById('f-image').value.trim(),
+        images: document.getElementById('f-images').value.trim(),
+        description: document.getElementById('f-description').value.trim(),
+        category: document.getElementById('f-category').value.trim(),
+        brand: document.getElementById('f-brand').value.trim(),
+        stock: document.getElementById('f-stock').value.trim(),
+        specs: document.getElementById('f-specs').value.trim(),
+        enddate: document.getElementById('f-enddate').value || ''
+      };
+
+      if (!product.title || !product.price || !product.image || !product.category) {
+        errorEl.textContent = '❌ يرجى تعبئة الحقول الإلزامية';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = STORE_CONFIG.labels.savingButton;
+
+      const action = editingProduct ? 'updateProduct' : 'addProduct';
+      const result = await apiCall(action, { product });
+
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = editingProduct ? STORE_CONFIG.labels.saveButton : STORE_CONFIG.labels.addButton;
+
+      if (result.success) {
+        closeProductModal();
+        showToast(editingProduct ? '✅ تم تعديل المنتج' : '✅ تمت إضافة المنتج', 'success');
+        setTimeout(refreshProducts, 1500);
+      } else {
+        errorEl.textContent = '❌ ' + (result.error || 'فشل الحفظ');
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    // ═══ 22. حذف المنتج ═══
+    async function confirmDelete(id, title) {
+      const ok = await confirmAction('هل أنت متأكد من حذف: ' + title + '؟');
+      if (!ok) return;
+
+      const result = await apiCall('deleteProduct', { id });
+      if (result.success) {
+        showToast('✅ تم حذف المنتج', 'success');
+        setTimeout(refreshProducts, 1000);
+      } else {
+        showToast('❌ ' + (result.error || 'فشل الحذف'), 'error');
+      }
+    }
+
+    // ═══ 23. الوضع الداكن/الفاتح ═══
+    function applyAdminTheme(isDark) {
+      const html = document.documentElement;
+      const icon = document.getElementById('admin-theme-icon');
+      if (isDark) {
+        html.classList.add('dark');
+        if (icon) icon.className = 'fas fa-sun text-sm';
+      } else {
+        html.classList.remove('dark');
+        if (icon) icon.className = 'fas fa-moon text-sm';
+      }
+    }
+
+    function toggleAdminTheme() {
+      const isDark = !document.documentElement.classList.contains('dark');
+      applyAdminTheme(isDark);
+      localStorage.setItem('admin_theme', isDark ? 'dark' : 'light');
+    }
+
+    function initAdminTheme() {
+      const saved = localStorage.getItem('admin_theme');
+      if (saved === 'dark') {
+        applyAdminTheme(true);
+      } else if (saved === 'light') {
+        applyAdminTheme(false);
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyAdminTheme(prefersDark);
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('admin_theme')) {
+          applyAdminTheme(e.matches);
+        }
+      });
+    }
+
+    // ═══ 24. التشغيل عند التحميل ═══
+    document.addEventListener('DOMContentLoaded', () => {
+      applyStoreConfig();
+      initAdminTheme();
+      hidePasswordFromURL();
+      if (sessionStorage.getItem('admin_logged_in') === '1') {
+        showDashboard();
+      }
+    });
+  </script>
+</body>
+</html>

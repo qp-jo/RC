@@ -1,0 +1,27 @@
+{
+  "name": "لوحة التحكم — المتجر الذكي",
+  "short_name": "لوحة التحكم",
+  "description": "إدارة منتجات المتجر",
+  "start_url": "./admin.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#3BC1C5",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/SXLvqXYG/1000051043-png.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/SXLvqXYG/1000051043-png.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
