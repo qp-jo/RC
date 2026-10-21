@@ -1,13 +1,13 @@
 {
-  "name": "المتجر الذكي | للأجهزة الخلوية والكمبيوتر",
-  "short_name": "المتجر الذكي",
-  "description": "تصفح أحدث الأجهزة الذكية، الهواتف، اللابتوبات، والإكسسوارات بأسعار منافسة.",
+  "name": "مطعم الشام | أشهى الأطباق الشرقية",
+  "short_name": "مطعم الشام",
+  "description": "مطعم الشام - أشهى الأطباق الشرقية والمشاوي. توصيل سريع، جودة عالية.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0f172a",
-  "theme_color": "#3BC1C5",
+  "theme_color": "#DC2626",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
