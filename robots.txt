@@ -4,4 +4,4 @@ Disallow: /admin.html
 Disallow: /admin
 Disallow: /manifest-admin.json
 
-Sitemap: https://qp-jo.github.io/M/sitemap.xml
+Sitemap: https://qp-jo.github.io/RC/sitemap.xml
