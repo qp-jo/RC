@@ -671,7 +671,14 @@
     let autocompleteIndex = -1;
     let autocompleteItems = [];
     let statusCheckInterval = null;
-
+ 
+    // ═══ أوقات العمل الديناميكية ═══
+    let dynamicOpenHours = {
+      from: '10:00',
+      to: '23:00',
+      days: [0, 1, 2, 3, 4, 5, 6]
+    };
+    
     // ═══ 3. قواميس البحث ═══
     const arabicToEnglishMapRaw = {
       'مشاوي': 'grills', 'مشوي': 'grilled',
@@ -788,15 +795,47 @@
       statusCheckInterval = setInterval(updateOpenStatus, 60000);
     }
 
+        // ═══ 5.5. تحميل الإعدادات من الشيت ═══
+    async function loadSettings() {
+      try {
+        const response = await fetch(ADMIN_API_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'getSettings',
+            token: ADMIN_SECRET_TOKEN
+          }),
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        const result = await response.json();
+
+        if (result.success && result.settings) {
+          const s = result.settings;
+          if (s.open_from) dynamicOpenHours.from = String(s.open_from);
+          if (s.open_to) dynamicOpenHours.to = String(s.open_to);
+          if (s.open_days) {
+            dynamicOpenHours.days = String(s.open_days)
+              .split(',')
+              .map(d => parseInt(d.trim(), 10))
+              .filter(d => !isNaN(d));
+          }
+          updateOpenStatus();
+        }
+      } catch (err) {
+        console.warn('تعذر تحميل الإعدادات:', err);
+      }
+    }
+
     // ═══ 6. حالة "مفتوح/مغلق" ═══
     function isStoreOpen() {
       if (!STORE_CONFIG.features.openHours) return true;
       const now = new Date();
       const day = now.getDay();
-      if (!STORE_CONFIG.openHours.days.includes(day)) return false;
+      if (!dynamicOpenHours.days.includes(day)) return false;
       const current = now.getHours() * 60 + now.getMinutes();
-      const from = parseInt(STORE_CONFIG.openHours.from.split(':')[0]) * 60 + parseInt(STORE_CONFIG.openHours.from.split(':')[1]);
-      const to = parseInt(STORE_CONFIG.openHours.to.split(':')[0]) * 60 + parseInt(STORE_CONFIG.openHours.to.split(':')[1]);
+      const fromParts = dynamicOpenHours.from.split(':');
+      const toParts = dynamicOpenHours.to.split(':');
+      const from = parseInt(fromParts[0], 10) * 60 + parseInt(fromParts[1] || '0', 10);
+      const to = parseInt(toParts[0], 10) * 60 + parseInt(toParts[1] || '0', 10);
       if (to < from) return current >= from || current <= to;
       return current >= from && current <= to;
     }
@@ -2433,6 +2472,7 @@
       renderCartDrawer();
       renderWishlistDrawer();
       renderRecentlyViewedDrawer();
+      loadSettings();
       loadProducts();
       loadTrustBadges();
       loadReviews();
